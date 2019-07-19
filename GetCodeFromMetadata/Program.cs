@@ -8,6 +8,8 @@ namespace GetCodeFromMetadata
     {
         static void Main(string[] args)
         {
+            #region Beta
+            /*
             LegacyObjectMetadataProvider.V1 metadataProviderVersion1 = new LegacyObjectMetadataProvider.V1();
             string metadata1 = metadataProviderVersion1.ProvideMetadata();
 
@@ -51,6 +53,46 @@ namespace GetCodeFromMetadata
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("Press any button to exit...");
             Console.ReadKey();
+            */
+            #endregion
+
+            LegacyObjectMetadataProvider.LatestVersionProvider metadataProvider = new LegacyObjectMetadataProvider.LatestVersionProvider();
+            ObjectCodeValidator validator = new ObjectCodeValidator();
+            int progressbar = 0;
+
+            for (int i = 0; i < 1_000_000; i++)
+            {
+                string metadata = metadataProvider.ProvideMetadata();
+                string code = GetCode(metadata);
+                validator.AssertCodeIsValid(code, metadata);
+                if (i % 1000 == 0)
+                {
+                    Console.Clear();
+                    progressbar++;
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"{i} of 1M codes are checked... [{code}]");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    ProgresBarDrawer(i / 25000);
+                }
+            }
+            Console.Clear();
+            Console.WriteLine($"All codes are correct!");
+            Console.ForegroundColor = ConsoleColor.Green;
+            ProgresBarDrawer(40);
+            Console.ReadKey();
+        }
+        private static void ProgresBarDrawer(int draws)
+        {            
+            Console.Write("0% ");
+            for (int i = 0; i < draws; i++)
+            {
+                Console.Write("█");
+            }
+            for (int j = 0; j < 40 - draws; j++)
+            {
+                Console.Write(" ");
+            }
+            Console.Write(" 100%");
         }
         private static string GetCode(string metadata)
         {
