@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace GetCodeFromMetadata
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -59,12 +59,13 @@ namespace GetCodeFromMetadata
             LegacyObjectMetadataProvider.LatestVersionProvider metadataProvider = new LegacyObjectMetadataProvider.LatestVersionProvider();
             ObjectCodeValidator validator = new ObjectCodeValidator();
             int progressbar = 0;
-
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             for (int i = 0; i < 1_000_000; i++)
             {
                 string metadata = metadataProvider.ProvideMetadata();
                 string code = GetCode(metadata);
                 validator.AssertCodeIsValid(code, metadata);
+
                 if (i % 1000 == 0)
                 {
                     Console.Clear();
@@ -79,6 +80,7 @@ namespace GetCodeFromMetadata
             Console.WriteLine($"All codes are correct!");
             Console.ForegroundColor = ConsoleColor.Green;
             ProgresBarDrawer(40);
+            sw.Stop();
             Console.ReadKey();
         }
         private static void ProgresBarDrawer(int draws)
@@ -93,6 +95,10 @@ namespace GetCodeFromMetadata
                 Console.Write(" ");
             }
             Console.Write(" 100%");
+        }
+        public static string ReturnCodeOutside(string metadata)
+        {
+            return GetCode(metadata);
         }
         private static string GetCode(string metadata)
         {
